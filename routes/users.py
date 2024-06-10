@@ -13,7 +13,7 @@ User Routes
 """
 
 from fastapi import APIRouter, Request
-from ..models import User
+# from ..models import User
 
 router = APIRouter()
 

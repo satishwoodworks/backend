@@ -20,9 +20,7 @@ router = APIRouter()
 
 @router.get("/users/")
 async def read_users(request: Request):
-    """ Read all users
-    """
-    ...
+    return JSONResponse({"response": "Welcome to Tehelka App"})
 
 
 @router.get("/users/{username}")

@@ -18,12 +18,12 @@ from fastapi import APIRouter, Request
 router = APIRouter()
 
 
-@router.get("/users/")
+@router.get("/")
 async def read_users(request: Request):
     return JSONResponse({"response": "Welcome to Tehelka App"})
 
 
-@router.get("/users/{username}")
+@router.get("/{username}")
 async def read_user(username: str):
     """ Read user by username
 
@@ -33,7 +33,7 @@ async def read_user(username: str):
     ...
 
 
-@router.put("/users/{username}")
+@router.put("/{username}")
 async def update_user(username: str, request: Request):
     """ Read user by username
 
@@ -43,7 +43,7 @@ async def update_user(username: str, request: Request):
     ...
     
     
-@router.delete("/users/{username}")
+@router.delete("/{username}")
 async def delete_user(username: str):
     """ Read user by username
 

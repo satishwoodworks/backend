@@ -1,8 +1,12 @@
 from fastapi import FastAPI
 
-from .routes import users, login
+from routes import users
 
 app = FastAPI()
+
+@app.get("/")
+def startup():
+    return {"response": "Welcome to Tehelka App"}
 
 app.include_router(users.router, prefix="/users")
 

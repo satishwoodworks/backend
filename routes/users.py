@@ -3,24 +3,53 @@ User Routes
 -----------
 
 - CREATE user
+- Verify user
 - READ user
 - UPDATE user
 - DELETE user
-- CREATE user_profile
-- READ user_profile
-- UPDATE user_profile
-- DELETE user_profile
 """
+import uuid
+from fastapi import APIRouter, Request, status
+from models.user import User, Verify_User
+from utils.user import *
+from db_utils.users import *
 
-from fastapi import APIRouter, Request
-# from ..models import User
 
 router = APIRouter()
 
+@router.post("/create_user")
+async def create_user(params: User):
+    """ create user
 
-@router.get("/")
-async def read_users(request: Request):
-    return {"response": "Welcome to Tehelka App"}
+    Args:
+
+    """
+    try:
+        hashed_p = hash_password(params.password)
+        salt = generate_random_string()
+        myuuid = str(uuid.uuid4())
+
+        insert_user_data(myuuid, params.username, params.email, 
+                         params.firstname, params.lastname,
+                         params.dob, params.gender.upper(),
+                         hashed_p, salt)
+
+        return {"message": "User created successfully"}
+    except Exception as ex:
+        return {"response": str(ex), "status_code": status.HTTP_400_BAD_REQUEST}
+
+
+@router.get("/verify_user")
+async def verify_user(params: Verify_User):
+    """ Verify user by user_id
+
+    Args:
+        user_id, code
+    """
+    try:
+        ...
+    except Exception as ex:
+        return {"response": str(ex), "status_code": status.HTTP_400_BAD_REQUEST}
 
 
 @router.get("/{username}")

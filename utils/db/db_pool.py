@@ -1,5 +1,5 @@
 from psycopg2 import pool
-from .db_config import DATABASE_CONFIG
+from config import DATABASE_CONFIG
 
 # Create a connection pool
 connection_pool = pool.SimpleConnectionPool(

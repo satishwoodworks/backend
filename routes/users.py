@@ -10,11 +10,13 @@ User Routes
 
 import uuid
 import random
+import datetime
 from fastapi import APIRouter, Request, status
 
 from models.user import User, Verify_User
 from utils.user import *
 from utils.db.users import *
+from config import OTPS
 
 
 router = APIRouter()
@@ -43,6 +45,8 @@ async def create_user(params: User):
                 
                 send_email(SUBJECT, formatted_email, SENDER_EMAIL, params.email, SENDER_KEY)
 
+                OTPS[str(code)] = { "created": datetime.datetime.now() }
+
                 return {"message": "User created successfully"}
             
             else:
@@ -62,7 +66,10 @@ async def verify_user(params: Verify_User):
         user_id, code
     """
     try:
-        if update_user_status(params.user_id):
+        if params.verification_code in OTPS:
+            # TODO: Check Time of OTP before verifying
+            update_user_status(params.user_id)
+            del OTPS[params.verification_code]
             return {"message": "Verification successful."}
         else:
             return {"message": "Verification unsuccessful."}

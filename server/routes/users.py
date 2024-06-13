@@ -11,19 +11,20 @@ User Routes
 import uuid
 import random
 import datetime
-from fastapi import APIRouter, Request, status
+from fastapi import APIRouter, status
 
-from models.user import User, Verify_User
-from utils.user import *
-from utils.db.users import *
 from config import OTPS
+from models.user import User, VerifyUser
+from templates.verification_email import BODY, SENDER_EMAIL, SENDER_KEY, SUBJECT
+from ..utils.user import hash_password, generate_random_string, send_email
+from ..utils.db import users
 
 
 router = APIRouter()
 
 @router.post("/create_user")
 async def create_user(params: User):
-    """ create user
+    """ CREATE user
 
     Args:
 
@@ -35,10 +36,10 @@ async def create_user(params: User):
         code = random.randint(100000, 999999)
         formatted_email = BODY.format(verification_code = str(code))
 
-        if not check_email_duplication(params.email):
-            if not check_username_duplication(params.username):
+        if not users.check_email_duplication(params.email):
+            if not users.check_username_duplication(params.username):
 
-                insert_user_data(myuuid, params.username, params.email, 
+                users.insert_user_data(myuuid, params.username, params.email, 
                                 params.firstname, params.lastname,
                                 params.dob, params.gender.upper(),
                                 hashed_p, salt)
@@ -59,7 +60,7 @@ async def create_user(params: User):
 
 
 @router.post("/verify_user")
-async def verify_user(params: Verify_User):
+async def verify_user(params: VerifyUser):
     """ Verify user by user_id
 
     Args:
@@ -68,7 +69,7 @@ async def verify_user(params: Verify_User):
     try:
         if params.verification_code in OTPS:
             # TODO: Check Time of OTP before verifying
-            update_user_status(params.user_id)
+            users.update_user_status(params.user_id)
             del OTPS[params.verification_code]
             return {"message": "Verification successful."}
         else:
@@ -80,7 +81,7 @@ async def verify_user(params: Verify_User):
 
 @router.get("/{userid}")
 async def read_user(userid: str):
-    """ Read user by userid
+    """ READ user by userid
 
     Args:
         userid (uuid): User ID

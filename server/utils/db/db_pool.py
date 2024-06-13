@@ -3,7 +3,9 @@ from config import DATABASE_CONFIG
 
 # Create a connection pool
 connection_pool = pool.SimpleConnectionPool(
-    1, 20,  # min and max number of connections
+    # min and max number of connections
+    minconn=1, 
+    maxconn=20,
     **DATABASE_CONFIG
 )
 

@@ -12,6 +12,6 @@ class User(BaseModel):
     gender: str
 
 
-class Verify_User(BaseModel):
+class VerifyUser(BaseModel):
     user_id: str
     verification_code: str

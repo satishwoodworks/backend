@@ -1,3 +1,4 @@
 fastapi
 pydantic
-uuid
+schemas
+psycopg2-binary

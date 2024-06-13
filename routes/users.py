@@ -3,51 +3,86 @@ User Routes
 -----------
 
 - CREATE user
+- Verify user
 - READ user
-- UPDATE user
-- DELETE user
-- CREATE user_profile
-- READ user_profile
-- UPDATE user_profile
-- DELETE user_profile
+- Complete user profile
 """
 
-from fastapi import APIRouter, Request
-# from ..models import User
+import uuid
+import random
+import datetime
+from fastapi import APIRouter, Request, status
+
+from models.user import User, Verify_User
+from utils.user import *
+from utils.db.users import *
+from config import OTPS
+
 
 router = APIRouter()
 
-
-@router.get("/")
-async def read_users(request: Request):
-    return {"response": "Welcome to Tehelka App"}
-
-
-@router.get("/{username}")
-async def read_user(username: str):
-    """ Read user by username
+@router.post("/create_user")
+async def create_user(params: User):
+    """ create user
 
     Args:
-        username (uuid): User ID
+
     """
-    ...
+    try:
+        hashed_p = hash_password(params.password)
+        salt = generate_random_string()
+        myuuid = str(uuid.uuid4())
+        code = random.randint(100000, 999999)
+        formatted_email = BODY.format(verification_code = str(code))
+
+        if not check_email_duplication(params.email):
+            if not check_username_duplication(params.username):
+
+                insert_user_data(myuuid, params.username, params.email, 
+                                params.firstname, params.lastname,
+                                params.dob, params.gender.upper(),
+                                hashed_p, salt)
+                
+                send_email(SUBJECT, formatted_email, SENDER_EMAIL, params.email, SENDER_KEY)
+
+                OTPS[str(code)] = { "created": datetime.datetime.now() }
+
+                return {"message": "User created successfully"}
+            
+            else:
+                return {"message": "username already exists."}
+            
+        else:
+            return {"message": "Email already exists."}
+    except Exception as ex:
+        return {"response": str(ex), "status_code": status.HTTP_400_BAD_REQUEST}
 
 
-@router.put("/{username}")
-async def update_user(username: str, request: Request):
-    """ Read user by username
+@router.post("/verify_user")
+async def verify_user(params: Verify_User):
+    """ Verify user by user_id
 
     Args:
-        username (uuid): User ID
+        user_id, code
     """
-    ...
-    
-    
-@router.delete("/{username}")
-async def delete_user(username: str):
-    """ Read user by username
+    try:
+        if params.verification_code in OTPS:
+            # TODO: Check Time of OTP before verifying
+            update_user_status(params.user_id)
+            del OTPS[params.verification_code]
+            return {"message": "Verification successful."}
+        else:
+            return {"message": "Verification unsuccessful."}
+        
+    except Exception as ex:
+        return {"response": str(ex), "status_code": status.HTTP_400_BAD_REQUEST}
+
+
+@router.get("/{userid}")
+async def read_user(userid: str):
+    """ Read user by userid
 
     Args:
-        username (uuid): User ID
+        userid (uuid): User ID
     """
     ...

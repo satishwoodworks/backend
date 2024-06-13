@@ -22,7 +22,7 @@ services:
     container_name: api
     image: server
     build: .
-    command: python main.py
+    command: python /usr/src/app/main.py
     # command: gunicorn -b 0.0.0.0:8000 todosapp.wsgi:application
     depends_on:
       - staging_db

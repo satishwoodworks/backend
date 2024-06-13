@@ -1,6 +1,8 @@
 import os
 
-if os.getenv("PRODUCTION_ENV").lower() == "production":
+PRODUCTION_ENV = os.getenv("PRODUCTION_ENV", "staging").lower()
+
+if PRODUCTION_ENV == "production":
     from .production import *
 else:
     from .staging import *

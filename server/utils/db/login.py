@@ -1,5 +1,6 @@
 import psycopg2
-from .db_pool import get_connection, put_connection, close_all_connections
+
+from .db_pool import get_connection
 
 
 def get_user_data(email_or_username, hash_password):
@@ -12,7 +13,6 @@ def get_user_data(email_or_username, hash_password):
         LEFT JOIN login l ON u.userid = l.userid
         LEFT JOIN user_profiles p ON u.userid = p.userid
         WHERE u.email = %s OR u.username = %s
-
     """
 
     try:

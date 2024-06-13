@@ -1,5 +1,5 @@
 import psycopg2
-from templates.verification_email import *
+
 from .db_pool import get_connection, put_connection, close_all_connections
 from ..user import send_email
 

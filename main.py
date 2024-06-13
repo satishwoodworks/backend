@@ -1,6 +1,13 @@
+import os
+import dotenv
+
 from fastapi import FastAPI
 
+ENV = os.path.join(os.path.dirname(__file__), '.env')
+dotenv.load_dotenv(ENV, override = True)
+
 from server.routes import users, login
+
 
 app = FastAPI()
 

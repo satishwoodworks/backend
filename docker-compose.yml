@@ -19,7 +19,7 @@ services:
       - 8080:8080
   
   server:
-    container_name: api
+    container_name: server
     image: server
     build: .
     command: python /usr/src/app/main.py
